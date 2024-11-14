@@ -1,21 +1,65 @@
-<PLUGIN name="nvidia-vgpu-driver" author="bmartino1" version="2023.11.13" launch="Settings/nvidia-vgpu-driver" pluginURL="https://github.com/bmartino1/unraid-nvidia-vgpu-driver/raw/main/nvidia-vgpu-driver.plg" min="6.11.5">
-    <!-- Updated version and added author -->
+<?xml version='1.0' standalone='yes'?>
+<!DOCTYPE PLUGIN [
+  <!ENTITY name      "nvidia-vgpu-driver">
+  <!ENTITY author    "bmartino1">
+  <!ENTITY version   "2023.11.13">
+  <!ENTITY launch    "Settings/nvidia-vgpu-driver">
+  <!ENTITY gitURL    "https://github.com/&author;/unraid-&name;/raw/master">
+  <!ENTITY pluginURL "https://github.com/&author;/unraid-&name;/raw/main/&name;.plg">
+  <!ENTITY md5       "INSERT_MD5_HASH">
+  <!ENTITY plugin    "/boot/config/plugins/&name;">
+  <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
+  <!ENTITY packages  "/boot/config/plugins/&name;/packages">
+]>
+
+<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" min="6.11.5">
     <CHANGES>
         ###2023.11.13
         - Added web UI page to upload NVIDIA driver and manage vGPU settings.
         - Added integration for mdvctl setup.
-
     </CHANGES>
+
     <FILE Name="/usr/local/emhttp/plugins/nvidia-vgpu-driver/nvidia-vgpu-driver.php" Mode="0755">
         <URL>https://github.com/bmartino1/unraid-nvidia-vgpu-driver/raw/main/source/nvidia-vgpu-driver.php</URL>
         <MD5>INSERT_MD5_HASH</MD5>
     </FILE>
 
     <FILE Name="/boot/config/plugins/nvidia-vgpu-driver/install.sh" Run="upgradepkg --install-new">
-        <URL>https://github.com/bmartino1/unraid-nvidia-vgpu-driver/raw/main/source/install.sh</URL>
+        <URL>https://raw.githubusercontent.com/bmartino1/unraid-nvidia-vgpu-driver/refs/heads/master/source/install.sh</URL>
         <MD5>INSERT_MD5_HASH</MD5>
     </FILE>
 
-    <!-- Other files like uninstall.sh, mdvctl setup, etc. -->
+    <FILE Name="/boot/config/plugins/nvidia-vgpu-driver/setup-mdvctl.sh" Run="upgradepkg --install-new">
+        <URL>https://github.com/bmartino1/unraid-nvidia-vgpu-driver/raw/main/source/setup-mdvctl.sh</URL>
+        <MD5>INSERT_MD5_HASH</MD5>
+    </FILE>
 
+    <FILE Name="/boot/config/plugins/nvidia-vgpu-driver/uninstall.sh" Run="upgradepkg --install-new">
+        <URL>https://github.com/bmartino1/unraid-nvidia-vgpu-driver/raw/main/source/uninstall.sh</URL>
+        <MD5>INSERT_MD5_HASH</MD5>
+    </FILE>
+
+    <FILE Run="/bin/bash">
+        <INLINE>
+            rm -f $(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null|grep -v '&version;')
+        </INLINE>
+    </FILE>
+
+    <FILE Run="/bin/bash">
+        <INLINE>
+            echo "----------------------------------------"
+            echo "---Installing NVIDIA vGPU Driver Plugin---"
+            echo "----------------------------------------"
+            bash /boot/config/plugins/&name;/install.sh
+        </INLINE>
+    </FILE>
+
+    <FILE Run="/bin/bash" Method="remove">
+        <INLINE>
+            echo "----------------------------------------"
+            echo "---Uninstalling NVIDIA vGPU Driver Plugin---"
+            echo "----------------------------------------"
+            bash /boot/config/plugins/&name;/uninstall.sh
+        </INLINE>
+    </FILE>
 </PLUGIN>
